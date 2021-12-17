@@ -13,6 +13,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::view('/', 'welcome')->middleware('guest');
+
+Route::group(['prefix'=>'dashboard','middleware' => 'auth'], function () {
+    Route::get('/', [App\Http\Controllers\ProductsController::class, 'index']);
+    Route::view('/add-product', 'add-product');
+    Route::post('/add-product', [App\Http\Controllers\ProductsController::class, 'save']);
+    Route::get('/edit-product/{id}', [App\Http\Controllers\ProductsController::class, 'edit']);
+    Route::put('/edit-product/{id}', [App\Http\Controllers\ProductsController::class, 'update']);
+    Route::get('/delete-product/{id}', [App\Http\Controllers\ProductsController::class, 'delete']);
+    });
+
+Route::get('/logout', function () {
+    Auth::logout();
+    return Redirect::to('/');
 });
